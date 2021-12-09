@@ -5,12 +5,15 @@ import javaBasic.example.restApi.common.MappingCustomer;
 import javaBasic.example.restApi.entity.Address;
 import javaBasic.example.restApi.entity.Customer;
 import javaBasic.example.restApi.entity.CustomerParam;
+import javaBasic.example.restApi.model.CustomerFilter;
 import javaBasic.example.restApi.model.CustomerModel;
 import javaBasic.example.restApi.repository.AddressRepository;
 import javaBasic.example.restApi.repository.CustomerRepository;
+import javaBasic.example.restApi.repository.specification.CustomerSpecification;
 import javaBasic.example.restApi.response.CustomerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,7 @@ public class CustomerServiceImpl implements CustomerService {
     CustomerRepository customerRepository;
     @Autowired
     AddressRepository addressRepository;
+
     @Override
     public CustomerResponse createCustomer(CustomerModel customerModel) {
         ArrayList<Address> addressModels =MappingAddress.fomartAddress(customerModel.addresses);
@@ -62,5 +66,11 @@ public class CustomerServiceImpl implements CustomerService {
             return  customerResponses;
         }
         return null;
+    }
+
+    @Override
+    public Iterable<Customer> filterV2(CustomerFilter filter, Pageable pageable) {
+        CustomerSpecification specification = new CustomerSpecification(filter);
+        return customerRepository.findAll(specification, pageable);
     }
 }
